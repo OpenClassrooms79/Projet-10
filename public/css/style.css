@@ -529,3 +529,122 @@ form .select2-container--default .select2-selection--multiple .select2-selection
         padding: 13px;
     }
 }
+
+.welcome {
+    background-color: #4D8077;
+    color: white;
+}
+
+BODY.welcome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.welcome H1 {
+    display: block;
+    color: white;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 46px;
+}
+
+.welcome H2 {
+    display: block;
+    margin-top: 24px;
+    color: white;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 30px;
+}
+
+.welcome H3 {
+    display: block;
+    color: white;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.h3margin {
+    margin-top: 80px;
+}
+
+.welcome A.button {
+    width: 224px;
+    height: 74px;
+    margin-left: auto;
+    margin-right: auto;
+
+    display: flex;
+    justify-content: center;
+}
+
+.dark-button {
+    background-color: #1C5B50;
+    color: white;
+}
+
+.welcome .button1margin {
+    margin-top: 32px;
+}
+
+.welcome .divhr {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 23px;
+}
+
+.welcome HR {
+    width: 139px;
+    height: 1px;
+    border: 1px solid white;
+}
+
+.welcome .divhr H3 {
+    margin-top: 24px;
+}
+
+H1.register {
+    margin-bottom: 47px;
+}
+
+.welcome FORM {
+    width: 310px;
+}
+
+.welcome FORM DIV {
+    margin-bottom: 24px;
+}
+
+.welcome BUTTON.button {
+    width: 100%;
+    height: 74px;
+    border: none;
+    justify-content: center;
+}
+
+.welcome LABEL {
+    margin-bottom: 10px;
+    text-align: left;
+    color: white;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+}
+
+.already-registered {
+    margin-top: 24px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+    color: white;
+}
+
+FORM[name="register"] BUTTON {
+    margin-top: 47px;
+    margin-bottom: 24px;
+}

@@ -23,7 +23,7 @@ class ProjectController extends AbstractController
     public const ERROR_SHOW = "Impossible d'afficher le projet n°%d car il n'existe pas.";
     public const ERROR_EDIT = "Impossible de modifier le projet n°%d car il n'existe pas.";
 
-    #[Route('/', name: 'project_index')]
+    #[Route('/projets', name: 'project_index')]
     public function index(ProjectRepository $projectRepository): Response
     {
         return $this->render('project/index.html.twig', [

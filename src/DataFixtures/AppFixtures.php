@@ -12,7 +12,9 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 
+use function array_map;
 use function array_rand;
+use function is_array;
 use function random_int;
 use function sprintf;
 
@@ -54,7 +56,18 @@ class AppFixtures extends Fixture
 
     public function loadUsers(ObjectManager $manager, Faker\Generator $faker): void
     {
+        $roles = ['ROLE_USER', 'ROLE_ADMIN'];
+
         for ($i = 1; $i <= self::NB_USERS; $i++) {
+            $random_indexes = array_rand($roles, random_int(1, self::NB_ROLES));
+            if (is_array($random_indexes)) {
+                $random_roles = array_map(static function ($key) use ($roles) {
+                    return $roles[$key];
+                }, $random_indexes);
+            } else {
+                $random_roles = [$roles[$random_indexes]];
+            }
+
             $user = new User();
             $user
                 ->setId($i)
@@ -63,7 +76,7 @@ class AppFixtures extends Fixture
                 ->setName($faker->lastName())
                 ->setEmail($faker->email())
                 ->setEnabled(true)
-                ->setRole(random_int(1, self::NB_ROLES))
+                ->setRoles($random_roles)
                 ->setPassword($faker->password())
                 ->setEntryDate($faker->dateTimeBetween('-10 year'));
             $manager->persist($user);

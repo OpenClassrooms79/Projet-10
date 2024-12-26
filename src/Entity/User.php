@@ -8,9 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,11 +32,17 @@ class User
     #[ORM\Column(length: 100)]
     private ?string $email = null;
 
+    /**
+     * @var ?string The hashed password
+     */
     #[ORM\Column(length: 100)]
     private ?string $password = null;
 
-    #[ORM\Column]
-    private ?int $role = null;
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column(type: 'json')]
+    private array $roles = ['CDI'];
 
     #[ORM\Column]
     private ?bool $enabled = null;
@@ -55,6 +67,7 @@ class User
 
     public function __construct()
     {
+        $this->enabled = true;
         $this->tasks = new ArrayCollection();
         $this->projects = new ArrayCollection();
     }
@@ -107,6 +120,42 @@ class User
         return $this;
     }
 
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @return list<string>
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -115,18 +164,6 @@ class User
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getRole(): ?int
-    {
-        return $this->role;
-    }
-
-    public function setRole(int $role): static
-    {
-        $this->role = $role;
 
         return $this;
     }
@@ -237,5 +274,25 @@ class User
     public function __toString(): string
     {
         return $this->getFullName();
+    }
+
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addConstraint(new UniqueEntity([
+            'fields' => 'email',
+            'message' => 'Cette adresse email est deja utilisée',
+        ]));
+
+        $metadata->addPropertyConstraint('email', new Assert\Email());
     }
 }

@@ -1,0 +1,19 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}S'inscrire à {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div>
+        <h1 class="register">S'inscrire</h1>
+
+        {{ form_start(form) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.password) }}
+        <button type="submit" class="button dark-button">Continuer</button>
+        {{ form_end(form) }}
+
+        <a href="connexion" class="already-registered">Vous avez déjà un compte ?</a>
+    </div>
+{% endblock %}

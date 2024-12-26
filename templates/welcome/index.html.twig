@@ -1,0 +1,21 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Bienvenue sur {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>Bienvenue sur TaskLinker</h1>
+        <h2>Commencez dès maintenant - gratuitement</h2>
+        <h3 class="h3margin">Vous avez déjà un compte ?</h3>
+
+        <a href="connexion" class="button dark-button button1margin">Se connecter</a>
+
+        <div class="divhr">
+            <hr>
+            <h3>OU</h3>
+            <hr>
+        </div>
+
+        <a href="inscription" class="button">S'inscrire</a>
+    </div>
+{% endblock %}
