@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+{% block title %}Page non trouvée - {{ parent() }}{% endblock %}
+{% block content %}
+    <h1>Page non trouvée</h1>
+
+    La page demandée n'a pas été trouvée. Peut-être avez-vous fait une faute de frappe ?<br><br>
+    <a href="{{ path('project_index') }}">Retour à la page d'accueil</a>.
+
+
+    </p>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ project.name }} - TaskLinker{% endblock %}
+
+{% block header %}
+    <div id="current-user"></div>
+    <div id="title-page">
+        <div class="flex-header">
+            <h1>{{ project.name }}</h1>
+            <div class="user-list">
+                {% for user in project.users %}
+                    <div class="avatar" title="{{ user.fullname }}">{{ user.initials }}</div>
+                {% endfor %}
+            </div>
+            <a class="button" href="{{ project.id }}/modifier2">Modifier</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="tasks-container">
+        {% for key, status in statuses %}
+            <div class="task-column">
+                <h2>{{ status }}</h2>
+                <div class="tasks-list">
+                    {% if tasks[key] is not defined %}
+                        <p>Aucune tache</p>
+                    {% else %}
+                        {% for task in tasks[key] %}
+                            <a class="task" href="/tache/{{ task.id }}/modifier">
+                                <h3>{{ task.title }}</h3>
+                                <p>{{ task.description }}</p>
+                                <div class="task-infos">
+                                    <div class="task-deadline">
+                                        <i class="fa-regular fa-calendar"></i> {{ task.deadline | date("d/m/Y") }}
+                                    </div>
+                                    {% if task.user %}
+                                        <div class="mini-user" title="{{ task.user.fullname }}">
+                                            {{ task.user.initials }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                    <a href="{{ project.id }}/tache/creer" class="task-add">
+                        + Ajouter une tâche
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

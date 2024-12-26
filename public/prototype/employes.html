@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width; initial-scale=1" />
+      <title>Liste des employés - TaskLinker</title>
+      <link rel="stylesheet" href="css/style.css"/>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+         integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+         crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+      <script src="js/select.js"></script>
+   </head>
+   <body>
+      <div id="main-container">
+         <nav>
+            <a href="index.html" id="logo">
+            <img src="img/logo.png" alt="Logo TaskLinker" />
+            </a>
+            <ul id="main-menu">
+               <li class="">
+                  <a href="index.html">
+                  <i class="fa-solid fa-list-check"></i> Projets
+                  </a>
+               </li>
+               <li class="active">
+                  <a href="employes.html">
+                  <i class="fa-regular fa-user"></i> Équipe
+                  </a>
+               </li>
+            </ul>
+         </nav>
+         <main>
+            <header>
+               <div id="current-user"></div>
+               <div id="title-page">
+                  <h1>Équipe</h1>
+               </div>
+            </header>
+            <div id="content">
+               <table id="team-container">
+                  <thead>
+                     <tr>
+                        <th>Prénom, Nom</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td>
+                           <div class="employee-infos">
+                              <div class="employee-avatar">
+                                 ND
+                              </div>
+                              <div class="employee-coords">
+                                 <strong>Natalie Dillon</strong>
+                                 <span>natalie@driblet.com</span>
+                              </div>
+                           </div>
+                        </td>
+                        <td>CDI</td>
+                        <td>
+                           <a class="button button-edit-team" href="employe.html">
+                           Éditer
+                           </a>
+                           <a class="delete-team" href="#">
+                           Supprimer
+                           </a>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <div class="employee-infos">
+                              <div class="employee-avatar">
+                                 DB
+                              </div>
+                              <div class="employee-coords">
+                                 <strong>Demi Baker</strong>
+                                 <span>demi@driblet.com</span>
+                              </div>
+                           </div>
+                        </td>
+                        <td>CDD</td>
+                        <td>
+                           <a class="button button-edit-team" href="employe.html">
+                           Éditer
+                           </a>
+                           <a class="delete-team" href="#">
+                           Supprimer
+                           </a>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>
+                           <div class="employee-infos">
+                              <div class="employee-avatar">
+                                 MD
+                              </div>
+                              <div class="employee-coords">
+                                 <strong>Marie Dupont</strong>
+                                 <span>marie@driblet.com</span>
+                              </div>
+                           </div>
+                        </td>
+                        <td>Freelance</td>
+                        <td>
+                           <a class="button button-edit-team" href="employe.html">
+                           Éditer
+                           </a>
+                           <a class="delete-team" href="#">
+                           Supprimer
+                           </a>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </main>
+      </div>
+   </body>
+</html>

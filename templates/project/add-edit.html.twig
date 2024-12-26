@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if project_name==null %}
+    Nouveau projet
+{% else %}
+    {{ project_name }}
+{% endif %} - {{ parent() }}{% endblock %}
+
+{% block header %}
+    <div id="current-user"></div>
+    <div id="title-page">
+        <h1>
+            {% if project_name==null %}
+                Nouveau projet
+            {% else %}
+                {{ project_name }}
+            {% endif %}
+        </h1>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {{ form_start(form) }}
+    <div>
+        {{ form_row(form.name) }}
+    </div>
+
+    <div>
+        {{ form_row(form.users) }}
+    </div>
+    <br>
+    <button class="button button-submit">Continuer</button>
+    {{ form_end(form) }}
+{% endblock %}

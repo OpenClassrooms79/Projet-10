@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width; initial-scale=1" />
+      <title>Natalie Dillon - TaskLinker</title>
+      <link rel="stylesheet" href="css/style.css"/>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+         integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+         crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+      <script src="js/select.js"></script>
+   </head>
+   <body>
+      <div id="main-container">
+         <nav>
+            <a href="index.html" id="logo">
+            <img src="img/logo.png" alt="Logo TaskLinker" />
+            </a>
+            <ul id="main-menu">
+               <li class="">
+                  <a href="index.html">
+                  <i class="fa-solid fa-list-check"></i> Projets
+                  </a>
+               </li>
+               <li class="active">
+                  <a href="employes.html">
+                  <i class="fa-regular fa-user"></i> Équipe
+                  </a>
+               </li>
+            </ul>
+         </nav>
+         <main>
+            <header>
+               <div id="current-user"></div>
+               <div id="title-page">
+                  <h1>Natalie Dillon</h1>
+               </div>
+            </header>
+            <div id="content">
+               <form name="employe" method="post">
+                   <div><label for="employe_nom" class="required">Nom</label><input type="text" id="employe_nom" name="employe[nom]" required="required" maxlength="255" value="Dillon" /></div>
+                   <div><label for="employe_prenom" class="required">Prenom</label><input type="text" id="employe_prenom" name="employe[prenom]" required="required" maxlength="255" value="Natalie" /></div>
+                   <div><label for="employe_email" class="required">Email</label><input type="email" id="employe_email" name="employe[email]" required="required" value="natalie@driblet.com" /></div>
+                   <div class="form-flex">
+                      <div><label for="employe_dateArrivee" class="required">Date d&#039;entrée</label><input type="date" id="employe_dateArrivee" name="employe[dateArrivee]" required="required" value="2019-06-14" /></div>
+                      <div><label for="employe_statut" class="required">Statut</label><input type="text" id="employe_statut" name="employe[statut]" required="required" maxlength="255" value="CDI" /></div>
+                   </div>
+                   <button class="button button-submit">Enregistrer</button>
+	        </form>
+             </div>
+         </main>
+      </div>
+   </body>
+</html>
