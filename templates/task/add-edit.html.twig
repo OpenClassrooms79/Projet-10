@@ -3,7 +3,6 @@
 {% block title %}{% if task.title==null %}Créer une tâche{% else %}Gestion des droits d'accès{% endif %} - {{ parent() }}{% endblock %}
 
 {% block header %}
-    <div id="current-user"></div>
     <div id="title-page">
         <h1>{% if task.title==null %}Créer une tâche{% else %}Gestion des droits d'accès{% endif %}</h1>
     </div>

@@ -41,7 +41,15 @@
     </nav>
 
     <main>
-        <header>{% block header %}{% endblock %}</header>
+        <header>
+            <div>
+                <a href="/deconnexion">
+                    <div id="current-user" class="avatar reverse"
+                         title="{{ app.user.fullname }}">{{ app.user.initials }}</div>
+                </a>
+            </div>
+            {% block header %}{% endblock %}
+        </header>
         <div id="content">{% block content %}{% endblock %}</div>
     </main>
 
