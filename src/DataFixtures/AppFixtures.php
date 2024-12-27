@@ -12,6 +12,8 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 use function array_map;
 use function array_rand;
 use function is_array;
@@ -27,10 +29,18 @@ class AppFixtures extends Fixture
     public const MAX_PROJECT_DAYS = 730;
     public const NB_TASKS = 200;
     public const NB_MAX_USERS_PER_PROJECT = 10;
+    public const DEFAULT_PASSWORD = 'test';
 
     private array $contracts = [];
     private array $users = [];
     private array $projects = [];
+
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -77,7 +87,12 @@ class AppFixtures extends Fixture
                 ->setEmail($faker->email())
                 ->setEnabled(true)
                 ->setRoles($random_roles)
-                ->setPassword($faker->password())
+                ->setPassword(
+                    $this->passwordHasher->hashPassword(
+                        $user,
+                        self::DEFAULT_PASSWORD,
+                    ),
+                )
                 ->setEntryDate($faker->dateTimeBetween('-10 year'));
             $manager->persist($user);
         }

@@ -8,7 +8,7 @@
         <h2>Commencez dès maintenant - gratuitement</h2>
         <h3 class="h3margin">Vous avez déjà un compte ?</h3>
 
-        <a href="connexion" class="button dark-button button1margin">Se connecter</a>
+        <a href="{{ path('welcome_login') }}" class="button dark-button button1margin">Se connecter</a>
 
         <div class="divhr">
             <hr>
@@ -16,6 +16,6 @@
             <hr>
         </div>
 
-        <a href="inscription" class="button">S'inscrire</a>
+        <a href="{{ path('welcome_register') }}" class="button">S'inscrire</a>
     </div>
 {% endblock %}

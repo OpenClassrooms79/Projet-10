@@ -89,8 +89,9 @@ HEADER > DIV:first-child {
     justify-content: end;
 }
 
-div#current-user {
+a#current-user {
     height: 55px;
+    text-decoration: none;
 }
 
 div#title-page h1 {

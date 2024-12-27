@@ -6,6 +6,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,16 +15,24 @@ use Symfony\Component\Routing\Requirement\Requirement;
 class UserController extends AbstractController
 {
     #[Route('/employes', name: 'user_index')]
-    public function index(UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository, Security $security): Response
     {
+        if (!$security->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('welcome_index');
+        }
+
         return $this->render('user/index.html.twig', [
             'users' => $userRepository->findAll(),
         ]);
     }
 
     #[Route('/employe/{id}/modifier', name: 'user_edit', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function edit(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, int $id): Response
+    public function edit(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, int $id, Security $security): Response
     {
+        if (!$security->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('welcome_index');
+        }
+
         $user = $userRepository->findOneBy(['id' => $id]);
 
         $form = $this->createForm(UserType::class, $user);
@@ -43,8 +52,12 @@ class UserController extends AbstractController
     }
 
     #[Route('/employe/{id}/supprimer', name: 'user_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function delete(EntityManagerInterface $entityManager, UserRepository $userRepository, int $id): Response
+    public function delete(EntityManagerInterface $entityManager, UserRepository $userRepository, int $id, Security $security): Response
     {
+        if (!$security->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('welcome_index');
+        }
+
         $user = $userRepository->findOneBy(['id' => $id]);
         if ($user !== null) {
             $entityManager->remove($user);

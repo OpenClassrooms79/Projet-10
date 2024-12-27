@@ -32,7 +32,7 @@
     <br>
     <button class="button button-submit">{% if task.id==null %}Ajouter{% else %}Modifier{% endif %}</button>
     {% if task.id!=null %}
-        <a href="/tache/{{ task.id }}/supprimer" class="delete-task">Supprimer la tâche</a>
+        <a href="{{ path('task_delete', {id: task.id}) }}" class="delete-task">Supprimer la tâche</a>
     {% endif %}
     {{ form_rest(form) }}
     {{ form_end(form) }}

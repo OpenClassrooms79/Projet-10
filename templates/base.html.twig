@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width; initial-scale=1">
@@ -23,30 +23,30 @@
 <body>
 <div id="main-container">
     <nav>
-        <a href="/" id="logo">
+        <a href="{{ path('welcome_index') }}" id="logo">
             <img src="{{ asset('images/logo.png') }}" alt="Logo TaskLinker"/>
         </a>
         <ul id="main-menu">
             <li{% if (app.request.get('_route') starts with 'project') or (app.request.get('_route') starts with 'task') %} class="active"{% endif %}>
-                <a href="/">
+                <a href="{{ path('project_index') }}">
                     <i class="fa-solid fa-list-check"></i> Projets
                 </a>
             </li>
-            <li{% if (app.request.get('_route') starts with 'user') %} class="active"{% endif %}>
-                <a href="/employes">
-                    <i class="fa-regular fa-user"></i> Équipe
-                </a>
-            </li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li{% if (app.request.get('_route') starts with 'user') %} class="active"{% endif %}>
+                    <a href="{{ path('user_index') }}">
+                        <i class="fa-regular fa-user"></i> Équipe
+                    </a>
+                </li>
+            {% endif %}
         </ul>
     </nav>
 
     <main>
         <header>
             <div>
-                <a href="/deconnexion">
-                    <div id="current-user" class="avatar reverse"
-                         title="{{ app.user.fullname }}">{{ app.user.initials }}</div>
-                </a>
+                <a href="{{ path('welcome_logout') }}" id="current-user" class="avatar reverse"
+                   title="{{ app.user.fullname }}">{{ app.user.initials }}</a>
             </div>
             {% block header %}{% endblock %}
         </header>

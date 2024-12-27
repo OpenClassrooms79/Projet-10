@@ -11,7 +11,9 @@
                     <div class="avatar" title="{{ user.fullname }}">{{ user.initials }}</div>
                 {% endfor %}
             </div>
-            <a class="button" href="{{ project.id }}/modifier2">Modifier</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a class="button" href="{{ path('project_edit2', {id: project.id}) }}">Modifier</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
@@ -26,7 +28,7 @@
                         <p>Aucune tache</p>
                     {% else %}
                         {% for task in tasks[key] %}
-                            <a class="task" href="/tache/{{ task.id }}/modifier">
+                            <a class="task" href="{{ path('task_edit', {id: task.id}) }}">
                                 <h3>{{ task.title }}</h3>
                                 <p>{{ task.description }}</p>
                                 <div class="task-infos">
@@ -42,7 +44,7 @@
                             </a>
                         {% endfor %}
                     {% endif %}
-                    <a href="{{ project.id }}/tache/creer" class="task-add">
+                    <a href="{{ path('task_create', {id: project.id}) }}" class="task-add">
                         + Ajouter une tâche
                     </a>
                 </div>

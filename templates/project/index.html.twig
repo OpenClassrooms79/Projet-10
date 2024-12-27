@@ -12,21 +12,26 @@
     <div id="projects-container">
         {% for project in projects %}
             <article class="card-project">
-                <a href="projet/{{ project.id }}">
+                <a href="{{ path('project_show', {id: project.id}) }}">
                     <h2>{{ project.name }}</h2>
                 </a>
-                <div class="card-project-icons">
-                    <a href="projet/{{ project.id }}/modifier1"><i class="fa-solid fa-pen"></i></a>
-                    <a href="projet/{{ project.id }}/supprimer"><i class="fa-solid fa-trash"></i></a>
-                </div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="card-project-icons">
+                        <a href="{{ path('project_edit1', {id: project.id}) }}"><i
+                                    class="fa-solid fa-pen"></i></a>
+                        <a href="{{ path('project_delete', {id: project.id}) }}"><i class="fa-solid fa-trash"></i></a>
+                    </div>
+                {% endif %}
             </article>
         {% endfor %}
 
-        <article class="card-project">
-            <a href="projet/creer">
-                <i class="fa-solid fa-circle-plus add-project-icon"></i>
-                <h2>Ajouter un projet</h2>
-            </a>
-        </article>
+        {% if is_granted('ROLE_ADMIN') %}
+            <article class="card-project">
+                <a href="{{ path('project_create') }}">
+                    <i class="fa-solid fa-circle-plus add-project-icon"></i>
+                    <h2>Ajouter un projet</h2>
+                </a>
+            </article>
+        {% endif %}
     </div>
 {% endblock %}

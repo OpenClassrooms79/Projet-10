@@ -33,10 +33,10 @@
                 </td>
                 <td>{{ user.getContract().getName() }}</td>
                 <td>
-                    <a class="button button-edit-team" href="/employe/{{ user.id }}/modifier">
+                    <a class="button button-edit-team" href="{{ path('user_edit', {id: user.id}) }}">
                         Éditer
                     </a>
-                    <a class="delete-team" href="/employe/{{ user.id }}/supprimer">
+                    <a class="delete-team" href="{{ path('user_delete', {id: user.id}) }}">
                         Supprimer
                     </a>
                 </td>

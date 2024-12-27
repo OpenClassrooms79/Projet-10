@@ -15,6 +15,6 @@
         <button type="submit" class="button dark-button">Continuer</button>
         {{ form_end(form) }}
 
-        <a href="connexion" class="no-account-or-already-registered">Vous avez déjà un compte ?</a>
+        <a href="{{ path('welcome_login') }}" class="no-account-or-already-registered">Vous avez déjà un compte ?</a>
     </div>
 {% endblock %}
