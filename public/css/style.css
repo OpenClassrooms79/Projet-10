@@ -635,7 +635,10 @@ H1.register {
     line-height: 22px;
 }
 
-.already-registered {
+.no-account-or-already-registered,
+.no-account-or-already-registered:hover,
+.no-account-or-already-registered:active,
+.no-account-or-already-registered:visited {
     margin-top: 24px;
     font-family: 'Manrope', sans-serif;
     font-weight: 400;
@@ -647,4 +650,9 @@ H1.register {
 FORM[name="register"] BUTTON {
     margin-top: 47px;
     margin-bottom: 24px;
+}
+
+FORM[name="login"] BUTTON {
+    margin-top: 51px;
+    margin-bottom: 16px;
 }

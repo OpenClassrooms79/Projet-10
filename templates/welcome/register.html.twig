@@ -11,9 +11,10 @@
         {{ form_row(form.name) }}
         {{ form_row(form.email) }}
         {{ form_row(form.password) }}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button type="submit" class="button dark-button">Continuer</button>
         {{ form_end(form) }}
 
-        <a href="connexion" class="already-registered">Vous avez déjà un compte ?</a>
+        <a href="connexion" class="no-account-or-already-registered">Vous avez déjà un compte ?</a>
     </div>
 {% endblock %}

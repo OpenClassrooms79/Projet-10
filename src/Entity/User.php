@@ -42,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column(type: 'json')]
-    private array $roles = ['CDI'];
+    private array $roles = ['ROLE_USER'];
 
     #[ORM\Column]
     private ?bool $enabled = null;
