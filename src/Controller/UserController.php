@@ -14,34 +14,40 @@ use Symfony\Component\Routing\Requirement\Requirement;
 
 class UserController extends AbstractController
 {
+    public function __construct(
+        private readonly UserRepository $userRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly Security $security,
+    ) {}
+
     #[Route('/employes', name: 'user_index')]
-    public function index(UserRepository $userRepository, Security $security): Response
+    public function index(): Response
     {
-        if (!$security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('welcome_index');
         }
 
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $this->userRepository->findAll(),
         ]);
     }
 
     #[Route('/employe/{id}/modifier', name: 'user_edit', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function edit(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, int $id, Security $security): Response
+    public function edit(int $id, Request $request): Response
     {
-        if (!$security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('welcome_index');
         }
 
-        $user = $userRepository->findOneBy(['id' => $id]);
+        $user = $this->userRepository->findOneBy(['id' => $id]);
 
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
             return $this->redirectToRoute('user_index');
         }
 
@@ -52,16 +58,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/employe/{id}/supprimer', name: 'user_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function delete(EntityManagerInterface $entityManager, UserRepository $userRepository, int $id, Security $security): Response
+    public function delete(int $id): Response
     {
-        if (!$security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('welcome_index');
         }
 
-        $user = $userRepository->findOneBy(['id' => $id]);
+        $user = $this->userRepository->findOneBy(['id' => $id]);
         if ($user !== null) {
-            $entityManager->remove($user);
-            $entityManager->flush();
+            $this->entityManager->remove($user);
+            $this->entityManager->flush();
         }
         return $this->redirectToRoute('user_index');
     }

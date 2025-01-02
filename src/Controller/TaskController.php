@@ -6,7 +6,6 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\ProjectRepository;
 use App\Repository\TaskRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,10 +20,16 @@ class TaskController extends AbstractController
     public const ERROR_EDIT = "Impossible de modifier la tâche n°%d car elle n'existe pas.";
     public const ERROR_DELETE = "Impossible de supprimer la tâche n°%d car elle n'existe pas.";
 
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ProjectRepository $projectRepository,
+        private readonly TaskRepository $taskRepository,
+    ) {}
+
     #[Route('/projet/{id}/tache/creer', name: 'task_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager, ProjectRepository $projectRepository, UserRepository $userRepository, int $id): Response
+    public function create(int $id, Request $request): Response
     {
-        $project = $projectRepository->findOneBy(['id' => $id]);
+        $project = $this->projectRepository->findOneBy(['id' => $id]);
         if ($project === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => ProjectController::ERROR_TITLE,
@@ -42,8 +47,8 @@ class TaskController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $task->setProject($project);
 
-            $entityManager->persist($task);
-            $entityManager->flush();
+            $this->entityManager->persist($task);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
         }
@@ -55,9 +60,9 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tache/{id}/modifier', name: 'task_edit')]
-    public function edit(Request $request, EntityManagerInterface $entityManager, TaskRepository $taskRepository, int $id): Response
+    public function edit(int $id, Request $request): Response
     {
-        $task = $taskRepository->findOneBy(['id' => $id]);
+        $task = $this->taskRepository->findOneBy(['id' => $id]);
         if ($task === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -76,8 +81,8 @@ class TaskController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($task);
-            $entityManager->flush();
+            $this->entityManager->persist($task);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('project_show', ['id' => $task->getProject()->getId()]);
         }
@@ -89,9 +94,9 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tache/{id}/supprimer', name: 'task_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function delete(EntityManagerInterface $entityManager, TaskRepository $taskRepository, int $id): Response
+    public function delete(int $id): Response
     {
-        $task = $taskRepository->findOneBy(['id' => $id]);
+        $task = $this->taskRepository->findOneBy(['id' => $id]);
         if ($task === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -100,8 +105,8 @@ class TaskController extends AbstractController
             ]);
         }
 
-        $entityManager->remove($task);
-        $entityManager->flush();
+        $this->entityManager->remove($task);
+        $this->entityManager->flush();
 
         $project = $task->getProject();
         if ($project === null) {

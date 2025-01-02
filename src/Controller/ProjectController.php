@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Project;
-use App\Entity\User;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
@@ -25,23 +24,30 @@ class ProjectController extends AbstractController
     public const ERROR_SHOW = "Impossible d'afficher le projet n°%d car il n'existe pas.";
     public const ERROR_EDIT = "Impossible de modifier le projet n°%d car il n'existe pas.";
 
+    public function __construct(
+        private readonly ProjectRepository $projectRepository,
+        private readonly UserRepository $userRepository,
+        private readonly Security $security,
+        private readonly EntityManagerInterface $entityManager,
+    ) {}
+
     #[Route('/projets', name: 'project_index')]
-    public function index(ProjectRepository $projectRepository, Security $security, EntityManagerInterface $entityManager): Response
+    public function index(): Response
     {
-        if (!$security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('welcome_index');
         }
 
-        if ($security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             // afficher tous les projets non archivés
             return $this->render('project/index.html.twig', [
-                'projects' => $projectRepository->findBy([
+                'projects' => $this->projectRepository->findBy([
                     'archived' => false,
                 ]),
             ]);
         }
 
-        $user = $entityManager->getRepository(User::class)->find($security->getUser()->getId());
+        $user = $this->userRepository->find($this->security->getUser()->getId());
 
         return $this->render('project/index.html.twig', [
             'projects' => $user->getProjects()->filter(function (Project $project) { return !$project->isArchived(); }),
@@ -49,13 +55,13 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/projet/{id}', name: 'project_show', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function show(ProjectRepository $projectRepository, int $id, Security $security, EntityManagerInterface $entityManager): Response
+    public function show(int $id): Response
     {
-        if (!$security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('welcome_index');
         }
 
-        $project = $projectRepository->findOneBy(['id' => $id]);
+        $project = $this->projectRepository->findOneBy(['id' => $id]);
         if ($project === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -64,11 +70,10 @@ class ProjectController extends AbstractController
             ]);
         }
 
-        $ok = false;
-        if ($security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             $ok = true;
         } else {
-            $user = $entityManager->getRepository(User::class)->find($security->getUser()->getId());
+            $user = $this->userRepository->find($this->security->getUser()->getId());
             $ok = $project->getUsers()->contains($user);
         }
 
@@ -91,9 +96,9 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/projet/creer', name: 'project_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, Security $security): Response
+    public function create(Request $request): Response
     {
-        if (!$security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('project_index');
         }
 
@@ -104,14 +109,14 @@ class ProjectController extends AbstractController
             $project,
             [
                 'users' => $project->getUsers()->toArray(),
-                'all_users' => $userRepository->findAll(),
+                'all_users' => $this->userRepository->findAll(),
             ],
         );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($project);
-            $entityManager->flush();
+            $this->entityManager->persist($project);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
         }
@@ -126,13 +131,13 @@ class ProjectController extends AbstractController
 
     #[Route('/projet/{id}/modifier1', name: 'project_edit1', requirements: ['id' => Requirement::POSITIVE_INT])]
     #[Route('/projet/{id}/modifier2', name: 'project_edit2', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function edit(Request $request, int $id, EntityManagerInterface $entityManager, ProjectRepository $projectRepository, UserRepository $userRepository, Security $security): Response
+    public function edit(Request $request, int $id): Response
     {
-        if (!$security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('project_index');
         }
 
-        $project = $projectRepository->findOneBy(['id' => $id]);
+        $project = $this->projectRepository->findOneBy(['id' => $id]);
         if ($project === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -149,14 +154,14 @@ class ProjectController extends AbstractController
             $project,
             [
                 'users' => $project->getUsers()->toArray(),
-                'all_users' => $userRepository->findAll(),
+                'all_users' => $this->userRepository->findAll(),
             ],
         );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($project);
-            $entityManager->flush();
+            $this->entityManager->persist($project);
+            $this->entityManager->flush();
 
             // retourner sur la bonne page en fonction de la route appelée
             if ($request->attributes->get('_route') === 'project_edit1') {
@@ -175,20 +180,20 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/projet/{id}/supprimer', name: 'project_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function delete(Project $project, EntityManagerInterface $entityManager, Security $security): Response
+    public function delete(Project $project): Response
     {
-        if (!$security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('project_index');
         }
 
         // suppression de toutes les tâches du projet
         foreach ($project->getTasks() as $task) {
-            $entityManager->remove($task);
+            $this->entityManager->remove($task);
         }
 
         //suppression du projet
-        $entityManager->remove($project);
-        $entityManager->flush();
+        $this->entityManager->remove($project);
+        $this->entityManager->flush();
 
         return $this->redirectToRoute('project_index');
     }

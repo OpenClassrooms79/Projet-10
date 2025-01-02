@@ -18,6 +18,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class WelcomeController extends AbstractController
 {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ContractRepository $contractRepository,
+        private readonly Security $security,
+    ) {}
+
     #[Route('/', name: 'welcome_index')]
     public function index(): Response
     {
@@ -27,9 +33,9 @@ class WelcomeController extends AbstractController
     }
 
     #[Route('/inscription', name: 'welcome_register')]
-    public function register(Request $request, EntityManagerInterface $entityManager, ContractRepository $contractRepository, UserPasswordHasherInterface $passwordHasher, Security $security): Response
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
-        if ($security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if ($this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
             // User is already logged in
             return $this->redirectToRoute('project_index');
         }
@@ -50,11 +56,11 @@ class WelcomeController extends AbstractController
             );
 
             $user->setEntryDate(new DateTime('now'));
-            $contract = $contractRepository->findBy(['name' => 'CDI'])[0];
+            $contract = $this->contractRepository->findBy(['name' => 'CDI'])[0];
             $user->setContract($contract);
             $user->setPassword($hashedPassword);
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('project_index');
         }
@@ -65,9 +71,9 @@ class WelcomeController extends AbstractController
     }
 
     #[Route('/connexion', name: 'welcome_login')]
-    public function login(Request $request, AuthenticationUtils $authenticationUtils, Security $security): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
-        if ($security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if ($this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
             // User is already logged in
             return $this->redirectToRoute('project_index');
         }
