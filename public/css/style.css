@@ -540,7 +540,6 @@ form .select2-container--default .select2-selection--multiple .select2-selection
 }
 
 .welcome {
-    background-color: #4D8077;
     color: white;
 }
 
@@ -549,6 +548,28 @@ BODY.welcome {
     justify-content: center;
     align-items: center;
     text-align: center;
+}
+
+DIV.splashscreen {
+    background-color: #4D8077;
+    width: 710px;
+    height: 724px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+DIV.welcome {
+    height: 724px;
+}
+
+DIV.login {
+    height: 698px;
+}
+
+DIV.register {
+    height: 859px;
 }
 
 .welcome H1 {

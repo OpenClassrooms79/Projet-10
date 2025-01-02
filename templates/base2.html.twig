@@ -10,6 +10,8 @@
           crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body class="welcome">
-{% block content %}{% endblock %}
+<div class="splashscreen {{ div_class }}">
+    {% block content %}{% endblock %}
+</div>
 </body>
 </html>
