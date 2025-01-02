@@ -14,6 +14,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
+use function array_unique;
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -68,6 +70,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->enabled = true;
+        $this->roles[] = 'ROLE_USER';
+        $this->roles = array_unique($this->roles);
         $this->tasks = new ArrayCollection();
         $this->projects = new ArrayCollection();
     }

@@ -19,8 +19,8 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class WelcomeController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private ContractRepository $contractRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ContractRepository $contractRepository,
         private readonly Security $security,
     ) {}
 
@@ -49,7 +49,7 @@ class WelcomeController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-// hash the password (based on the security.yaml config for the $user class)
+            // hash the password (based on the security.yaml config for the $user class)
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword(),
@@ -71,35 +71,27 @@ class WelcomeController extends AbstractController
     }
 
     #[Route('/connexion', name: 'welcome_login')]
-    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        // si on vient sur la page de connexion et que l'utilisateur est deja identifié
         if ($this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
-            // User is already logged in
             return $this->redirectToRoute('project_index');
         }
 
-        $user = new User();
+        // dernière adresse e-mail saisie dans le formulaire
+        $lastUsername = $authenticationUtils->getLastUsername();
 
         $form = $this->createForm(
             LoginType::class,
-            $user,
+            new User(),
+            [
+                'last_username' => $lastUsername,
+            ],
         );
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            return $this->redirectToRoute('project_index');
-        }
-
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('welcome/login.html.twig', [
             'form' => $form,
-            'last_username' => $lastUsername,
-            'error' => $error,
+            'error' => $authenticationUtils->getLastAuthenticationError(), // dernier message d'erreur
         ]);
     }
 

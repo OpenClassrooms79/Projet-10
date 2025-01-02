@@ -23,14 +23,14 @@ security:
       form_login:
         login_path: welcome_login
         check_path: welcome_login
+        default_target_path: project_index # URL de redirection automatique après login avec succès
         username_parameter: login[email]
         password_parameter: login[password]
         enable_csrf: true
         #csrf_parameter: login[_csrf_token]
       logout:
         path: welcome_logout
-        # where to redirect after logout
-        # target: app_any_route
+        target: welcome_index # URL de redirection automatique après logout
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
