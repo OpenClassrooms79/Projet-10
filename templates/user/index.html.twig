@@ -12,8 +12,9 @@
     <table id="team-container">
         <thead>
         <tr>
-            <th>Prénom, Nom</th>
+            <th>Prénom, Nom, E-mail</th>
             <th>Statut</th>
+            <th>Rôle</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -32,6 +33,7 @@
                     </div>
                 </td>
                 <td>{{ user.getContract().getName() }}</td>
+                <td>{% if 'ROLE_ADMIN' in user.roles %}Chef de projet{% else %}Collaborateur{% endif %}</td>
                 <td>
                     <a class="button button-edit-team" href="{{ path('user_edit', {id: user.id}) }}">
                         Éditer
