@@ -66,7 +66,7 @@ class AppFixtures extends Fixture
 
     public function loadUsers(ObjectManager $manager, Faker\Generator $faker): void
     {
-        $roles = ['ROLE_USER', 'ROLE_ADMIN'];
+        $roles = [User::ROLE_USER, User::ROLE_ADMIN];
 
         for ($i = 1; $i <= self::NB_USERS; $i++) {
             $random_indexes = array_rand($roles, random_int(1, self::NB_ROLES));

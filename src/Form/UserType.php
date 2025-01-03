@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -80,6 +81,15 @@ class UserType extends AbstractType
                 'class' => Contract::class,
                 'label' => 'Contrat',
                 'choice_label' => 'name',
+            ])
+            ->add('roles', ChoiceType::class, [
+                'label' => 'Rôle',
+                'multiple' => true,
+                'data' => $options['roles'], // valeurs par défaut
+                'choices' => [
+                    'Employé' => User::ROLE_USER,
+                    'Chef de projet' => User::ROLE_ADMIN,
+                ],
             ]);
     }
 
@@ -87,6 +97,8 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'roles' => [],
         ]);
+        $resolver->setAllowedTypes('roles', 'array');
     }
 }

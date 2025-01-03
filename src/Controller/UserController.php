@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +24,7 @@ class UserController extends AbstractController
     #[Route('/employes', name: 'user_index')]
     public function index(): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
             return $this->redirectToRoute('welcome_index');
         }
 
@@ -35,13 +36,19 @@ class UserController extends AbstractController
     #[Route('/employe/{id}/modifier', name: 'user_edit', requirements: ['id' => Requirement::POSITIVE_INT])]
     public function edit(int $id, Request $request): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
             return $this->redirectToRoute('welcome_index');
         }
 
         $user = $this->userRepository->findOneBy(['id' => $id]);
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(
+            UserType::class,
+            $user,
+            [
+                'roles' => $user->getRoles(),
+            ],
+        );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -60,7 +67,7 @@ class UserController extends AbstractController
     #[Route('/employe/{id}/supprimer', name: 'user_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
     public function delete(int $id): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
             return $this->redirectToRoute('welcome_index');
         }
 

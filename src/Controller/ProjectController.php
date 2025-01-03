@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Entity\User;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
@@ -38,7 +39,7 @@ class ProjectController extends AbstractController
             return $this->redirectToRoute('welcome_index');
         }
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted(User::ROLE_ADMIN)) {
             // afficher tous les projets non archivés
             return $this->render('project/index.html.twig', [
                 'projects' => $this->projectRepository->findBy([
@@ -70,7 +71,7 @@ class ProjectController extends AbstractController
             ]);
         }
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted(User::ROLE_ADMIN)) {
             $ok = true;
         } else {
             $user = $this->userRepository->find($this->security->getUser()->getId());
@@ -98,7 +99,7 @@ class ProjectController extends AbstractController
     #[Route('/projet/creer', name: 'project_create')]
     public function create(Request $request): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
             return $this->redirectToRoute('project_index');
         }
 
@@ -133,7 +134,7 @@ class ProjectController extends AbstractController
     #[Route('/projet/{id}/modifier2', name: 'project_edit2', requirements: ['id' => Requirement::POSITIVE_INT])]
     public function edit(Request $request, int $id): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
             return $this->redirectToRoute('project_index');
         }
 
@@ -182,7 +183,7 @@ class ProjectController extends AbstractController
     #[Route('/projet/{id}/supprimer', name: 'project_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
     public function delete(Project $project): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
             return $this->redirectToRoute('project_index');
         }
 
