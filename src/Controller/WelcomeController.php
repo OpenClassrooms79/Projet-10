@@ -27,9 +27,7 @@ class WelcomeController extends AbstractController
     #[Route('/', name: 'welcome_index')]
     public function index(): Response
     {
-        return $this->render('welcome/index.html.twig', [
-            'div_class' => 'welcome',
-        ]);
+        return $this->render('welcome/index.html.twig');
     }
 
     #[Route('/inscription', name: 'welcome_register')]
@@ -67,7 +65,6 @@ class WelcomeController extends AbstractController
 
         return $this->render('welcome/register.html.twig', [
             'form' => $form,
-            'div_class' => 'register',
         ]);
     }
 
@@ -93,7 +90,6 @@ class WelcomeController extends AbstractController
         return $this->render('welcome/login.html.twig', [
             'form' => $form,
             'error' => $authenticationUtils->getLastAuthenticationError(), // dernier message d'erreur
-            'div_class' => 'login',
         ]);
     }
 

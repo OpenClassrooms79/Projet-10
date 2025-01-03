@@ -553,23 +553,12 @@ BODY.welcome {
 DIV.splashscreen {
     background-color: #4D8077;
     width: 710px;
-    height: 724px;
+    padding-top: 55px;
+    padding-bottom: 55px;
     border-radius: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-DIV.welcome {
-    height: 724px;
-}
-
-DIV.login {
-    height: 698px;
-}
-
-DIV.register {
-    height: 859px;
 }
 
 .welcome H1 {

@@ -1,6 +1,7 @@
 *.idea
 *.lnk
 *.odt
+*.odt#
 desktop.ini
 
 ###> symfony/framework-bundle ###
