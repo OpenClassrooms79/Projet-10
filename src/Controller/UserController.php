@@ -40,7 +40,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('welcome_index');
         }
 
-        $user = $this->userRepository->findOneBy(['id' => $id]);
+        $user = $this->userRepository->find($id);
 
         $form = $this->createForm(
             UserType::class,
@@ -71,7 +71,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('welcome_index');
         }
 
-        $user = $this->userRepository->findOneBy(['id' => $id]);
+        $user = $this->userRepository->find($id);
         if ($user !== null) {
             $this->entityManager->remove($user);
             $this->entityManager->flush();

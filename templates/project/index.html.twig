@@ -17,9 +17,10 @@
                 </a>
                 {% if is_granted('ROLE_ADMIN') %}
                     <div class="card-project-icons">
-                        <a href="{{ path('project_edit1', {id: project.id}) }}"><i
+                        <a href="{{ path('project_edit1', {id: project.id}) }}" title="Modifier"><i
                                     class="fa-solid fa-pen"></i></a>
-                        <a href="{{ path('project_delete', {id: project.id}) }}"><i class="fa-solid fa-trash"></i></a>
+                        <a href="{{ path('project_archive', {id: project.id}) }}" title="Archiver"><i
+                                    class="fa-solid fa-trash"></i></a>
                     </div>
                 {% endif %}
             </article>

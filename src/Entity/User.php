@@ -277,6 +277,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isAdmin(): bool
+    {
+        return in_array(self::ROLE_ADMIN, $this->roles, true);
+    }
+
     public function __toString(): string
     {
         return $this->getFullName();

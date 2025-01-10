@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends AbstractController
 {
@@ -27,9 +28,10 @@ class TaskController extends AbstractController
     ) {}
 
     #[Route('/projet/{id}/tache/creer', name: 'task_create')]
+    #[IsGranted('project_access', 'id')]
     public function create(int $id, Request $request): Response
     {
-        $project = $this->projectRepository->findOneBy(['id' => $id]);
+        $project = $this->projectRepository->find($id);
         if ($project === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => ProjectController::ERROR_TITLE,
@@ -60,9 +62,10 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tache/{id}/modifier', name: 'task_edit')]
+    #[IsGranted('task_access', 'id')]
     public function edit(int $id, Request $request): Response
     {
-        $task = $this->taskRepository->findOneBy(['id' => $id]);
+        $task = $this->taskRepository->find($id);
         if ($task === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -94,9 +97,10 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tache/{id}/supprimer', name: 'task_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
+    #[IsGranted('task_access', 'id')]
     public function delete(int $id): Response
     {
-        $task = $this->taskRepository->findOneBy(['id' => $id]);
+        $task = $this->taskRepository->find($id);
         if ($task === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,

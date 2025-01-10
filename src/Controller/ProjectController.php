@@ -10,12 +10,11 @@ use App\Repository\UserRepository;
 use App\Status;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use function ksort;
 
@@ -24,45 +23,39 @@ class ProjectController extends AbstractController
     public const ERROR_TITLE = 'Projet inexistant';
     public const ERROR_SHOW = "Impossible d'afficher le projet n°%d car il n'existe pas.";
     public const ERROR_EDIT = "Impossible de modifier le projet n°%d car il n'existe pas.";
+    public const ERROR_ARCHIVE = "Impossible d'archiver le projet n°%d car il n'existe pas.";
 
     public function __construct(
         private readonly ProjectRepository $projectRepository,
         private readonly UserRepository $userRepository,
-        private readonly Security $security,
         private readonly EntityManagerInterface $entityManager,
     ) {}
 
     #[Route('/projets', name: 'project_index')]
     public function index(): Response
     {
-        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user === null) {
             return $this->redirectToRoute('welcome_index');
         }
 
-        if ($this->security->isGranted(User::ROLE_ADMIN)) {
-            // afficher tous les projets non archivés
-            return $this->render('project/index.html.twig', [
-                'projects' => $this->projectRepository->findBy([
-                    'archived' => false,
-                ]),
-            ]);
+        if ($user->isAdmin()) {
+            // récupérer tous les projets non archivés
+            $projects = $this->projectRepository->findBy(['archived' => false]);
+        } else {
+            $projects = $user->getProjects()->filter(function (Project $project) { return !$project->isArchived(); });
         }
 
-        $user = $this->userRepository->find($this->security->getUser()->getId());
-
-        return $this->render('project/index.html.twig', [
-            'projects' => $user->getProjects()->filter(function (Project $project) { return !$project->isArchived(); }),
-        ]);
+        return $this->render('project/index.html.twig', ['projects' => $projects]);
     }
 
     #[Route('/projet/{id}', name: 'project_show', requirements: ['id' => Requirement::POSITIVE_INT])]
+    #[IsGranted('project_access', 'id')]
     public function show(int $id): Response
     {
-        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->redirectToRoute('welcome_index');
-        }
-
-        $project = $this->projectRepository->findOneBy(['id' => $id]);
+        $project = $this->projectRepository->find($id);
         if ($project === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -71,38 +64,24 @@ class ProjectController extends AbstractController
             ]);
         }
 
-        if ($this->security->isGranted(User::ROLE_ADMIN)) {
-            $ok = true;
-        } else {
-            $user = $this->userRepository->find($this->security->getUser()->getId());
-            $ok = $project->getUsers()->contains($user);
+        $sortedTasks = [];
+        $tasks = $project->getTasks();
+        foreach ($tasks as $task) {
+            $sortedTasks[$task->getStatusId()][] = $task;
         }
+        ksort($sortedTasks);
 
-        if ($ok) {
-            $sortedTasks = [];
-            $tasks = $project->getTasks();
-            foreach ($tasks as $task) {
-                $sortedTasks[$task->getStatusId()][] = $task;
-            }
-            ksort($sortedTasks);
-
-            return $this->render('project/show.html.twig', [
-                'project' => $project,
-                'tasks' => $sortedTasks,
-                'statuses' => Status::getAll(),
-            ]);
-        }
-
-        return $this->redirectToRoute('project_index');
+        return $this->render('project/show.html.twig', [
+            'project' => $project,
+            'tasks' => $sortedTasks,
+            'statuses' => Status::getAll(),
+        ]);
     }
 
     #[Route('/projet/creer', name: 'project_create')]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request): Response
     {
-        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
-            return $this->redirectToRoute('project_index');
-        }
-
         $project = new Project();
 
         $form = $this->createForm(
@@ -132,13 +111,10 @@ class ProjectController extends AbstractController
 
     #[Route('/projet/{id}/modifier1', name: 'project_edit1', requirements: ['id' => Requirement::POSITIVE_INT])]
     #[Route('/projet/{id}/modifier2', name: 'project_edit2', requirements: ['id' => Requirement::POSITIVE_INT])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, int $id): Response
     {
-        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
-            return $this->redirectToRoute('project_index');
-        }
-
-        $project = $this->projectRepository->findOneBy(['id' => $id]);
+        $project = $this->projectRepository->find($id);
         if ($project === null) {
             return $this->forward('App\Controller\ErrorController::index', [
                 'title' => self::ERROR_TITLE,
@@ -180,13 +156,29 @@ class ProjectController extends AbstractController
         );
     }
 
-    #[Route('/projet/{id}/supprimer', name: 'project_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
-    public function delete(Project $project): Response
+    #[Route('/projet/{id}/archiver', name: 'project_archive', requirements: ['id' => Requirement::POSITIVE_INT])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function archive(int $id): Response
     {
-        if (!$this->security->isGranted(User::ROLE_ADMIN)) {
-            return $this->redirectToRoute('project_index');
+        $project = $this->projectRepository->find($id);
+        if ($project === null) {
+            return $this->forward('App\Controller\ErrorController::index', [
+                'title' => self::ERROR_TITLE,
+                'message' => self::ERROR_ARCHIVE,
+                'id' => $id,
+            ]);
         }
 
+        $project->setArchived(true);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('project_index');
+    }
+
+    #[Route('/projet/{id}/supprimer', name: 'project_delete', requirements: ['id' => Requirement::POSITIVE_INT])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function delete(Project $project): Response
+    {
         // suppression de toutes les tâches du projet
         foreach ($project->getTasks() as $task) {
             $this->entityManager->remove($task);
